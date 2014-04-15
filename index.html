@@ -1,0 +1,145 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Agy nélkül a fejem csak BONG.</title>
+	<link rel="shortcut icon" type="image/png" href="favicon.png"/>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<style>
+		body {
+			background: url('bg.jpg') no-repeat center center fixed;
+			-webkit-background-size: cover;
+			-moz-background-size: cover;
+			-o-background-size: cover;
+			background-size: cover;
+			font-family: Ubuntu, Verdana, Geneva, sans-serif;
+		}
+		h1 {
+			font-size: 80pt;
+			line-height: 1.5;
+			padding: 0;
+			text-align: center;
+			margin: 0.2em;
+		}
+		.inner {
+			width: 500px;
+			margin: 0px auto;
+		}
+		.caption {
+			color: #000;
+			line-height: 1.5;
+			padding: 0;
+			display: inline;
+			font-size: 22pt;
+			background-color: #00DA09;
+			box-shadow: 10px 0 0 #00DA09, -10px 0 0 #00DA09;
+		}
+		.image {
+			width: 500px;
+			height: 500px;
+			margin: 0px auto;
+			background-position: center;
+			background-repeat: no-repeat;
+			-o-background-size: contain;
+			-webkit-background-size: contain;
+			-moz-background-size: contain;
+			background-size: contain;
+		}
+		.image img {
+			max-width: 500px;
+			max-height: 600px;
+		}
+		.image_container {
+			-webkit-transition: 0.5s;
+			-moz-transition: 0.5s;
+			-ms-transition: 0.5s;
+			-o-transition: 0.5s;
+			transition: 0.5s;
+			position: fixed;
+			top: 0px;
+			width: 100%;
+			height: 150px;
+		}
+		.image_container.center {
+			left: 0px;
+		}
+		.image_container.left {
+			left: -100%;
+		}
+		.image_container.right {
+			left: 100%;
+		}
+	</style>
+	<script>
+		var nextLoaded = true;
+		function setNextImageSrc() {
+			$.getJSON("https://graph.facebook.com/fql?q=SELECT+images,caption,link+FROM+photo+WHERE+album_object_id=520001574758226+ORDER+BY+rand()+LIMIT+1", function(data){
+				$('.right .image').css('background-image', 'url('+data.data[0].images[0].source+')');
+				$('.right .caption').html(data.data[0].caption);
+				$('.right a').attr('href',data.data[0].link);
+
+			}).always(function(){
+				// TODO: not always
+				nextLoaded = true;
+			});
+		}
+		function updateClasses() {
+			var elem = $(".image_container");
+			switch(curr_pos) {
+				case -1: elem.removeClass("center right"); elem.addClass("left"); break;
+				case  0: elem.removeClass("left right"); elem.addClass("center"); break;
+				case  1: elem.removeClass("left center"); elem.addClass("right"); break;
+			}
+		}
+
+		function createNew() {
+			var newContainer = $('<div class="image_container right"></div>');
+			var newInner = $('<div class="inner"></div>');
+			var newImage = $('<a target="_blank"><div class="image"></div></a>');
+			var newCaption = $('<p class="caption"></p>');
+			newInner.append(newImage);
+			newInner.append(newCaption);
+			newContainer.append(newInner);
+			$("body").append(newContainer);
+		}
+
+		function loadNext() {
+			// Delete the one before the previous
+			$('.left').remove();
+
+			// Move previous to the left
+			var prevContainer = $('.center');
+			prevContainer.removeClass("center").addClass("left");
+
+			// Move next to center
+			var nextContainer = $('.right');
+			nextContainer.removeClass("right").addClass("center");
+
+			// Start loading the next image
+			createNew();
+			setNextImageSrc();
+		}
+
+		function keyPressed(e) {
+		    e = e || window.event;
+		    console.log(e.keyCode);
+		    if (e.keyCode == 37) {
+		    	if (nextLoaded) {
+			    	loadNext();
+			    }
+		    }
+		}
+
+		document.onkeydown = keyPressed;
+	</script>
+</head>
+<body>
+	<div class="image_container center"><div class="inner">
+		<h1 style="background-color: #17C200">TE +</h1>
+		<h1 style="background-color: #ECE300">ÉN =</h1>
+		<h1 style="background-color: #CE0000">BONG :$</h1></inner></div>
+	<script>
+		createNew();
+		setNextImageSrc();
+	</script>
+</body>
+</html>
